@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using WebServicesCidades.Models;
 
 namespace WebServicesCidades.Controllers
@@ -38,6 +39,45 @@ namespace WebServicesCidades.Controllers
             return CreatedAtRoute("CidadeAtual", new { id = cidades.Id }, cidades);
 
         }
+
+         [HttpPut]
+        public IActionResult Editar([FromBody] Cidades cidade)
+        {
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    dao.Editar(cidade);
+                    return Ok(cidade);
+                }
+
+                IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+                
+                return BadRequest(allErrors);
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Excluir(int id)
+        {
+
+            try
+            {
+                dao.Excluir(id);
+                return Ok(id);
+            }
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        
         /*5. neste exemplo, além de requisitar o serviço, será passado um parâmetro [id]
          [HttpGet("{id}")]
          public string Get(int id)

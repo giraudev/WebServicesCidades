@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    
+    <title>Projeto Cidades</title>
+  </head>
+  <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                <a class="navbar-brand" href="#">Projeto Cidades</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                  <ul class="navbar-nav">
+                    <li class="nav-item active">
+                      <a class="nav-link" href="#">Cidades</span></a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">Estados</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">Países</a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+        <div class="container">
+            <br>
+            <h1>Cidades</h1>
+            <br>
+            <a onclick="novaCidade()" class="btn btn-success">Cadastrar</a>
+            <br>
+            <br>
+            <span>Quantidade de registros: <span id="qtdRegistros"></span></span>
+            <br>
+            <br>
+            <table class="table" id="tbCidades">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Habitantes</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                    </tbody>
+                  </table>
+            <hr>
+            <div id="formulario" style="display: none">
+                    <h4 id="acaoFormulario"></h4>
+                    <form>
+                            <div class="form-group" id="form-idCidade">
+                                    <label for="nome">Id</label>
+                                    <input type="number" disabled class="form-control" id="idCidade" placeholder="id">
+                                </div>
+                            <div class="form-group">
+                                <label for="nome">Nome</label>
+                                <input type="text" class="form-control" id="nomeCidade"  autocomplete="off" placeholder="Nome">
+                            </div>
+                            <div class="form-group">
+                                <label for="estado">Estado</label>
+                                <input type="text" maxlength="2" class="form-control" id="estadoCidade" autocomplete="off" placeholder="Estado">
+                            </div>
+                            <div class="form-group">
+                                <label for="habitantes">Habitantes</label>
+                                <input type="number" class="form-control" id="habitantesCidade" minlength="2" autocomplete="off" placeholder="Habitantes">
+                            </div>
+                            <a onclick="atualizar()" class="btn btn-primary btn-atualizar">Atualizar</a>
+                            <a value="Validate!"  onclick="cadastrar()" class="btn btn-primary  btn-cadastrar">Cadastrar</a>
+                            <a onclick="cancelar()" class="btn btn-danger">Cancelar</a>
+                          </form>
+            </div>
+        </div>
+    
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+    <script language="JavaScript">
+    
+    $(document).ready(function(){
+        BuscarDados();
+    });
+    $('#tbCidades tbody').on('click', '.atualizar', function(event){
+        $('#form-idCidade').css('display','');
+        $('#idCidade').val( $(this).data('id'));
+        $('#nomeCidade').val( $(this).data('nome'));
+        $('#estadoCidade').val( $(this).data('estado'));
+        $('#habitantesCidade').val( $(this).data('habitantes'));
+        $('.btn-cadastrar').css('display','none');
+        $('.btn-atualizar').css('display','');
+        $('#formulario').css('display','');
+    });
+    function atualizar(){
+        var cidade = {
+            id: parseInt($('#idCidade').val()),
+            nome: $('#nomeCidade').val(),
+            estado:$('#estadoCidade').val( ),
+            habitantes:parseInt($('#habitantesCidade').val())
+        }
+        
+        $.ajax({
+            url: 'http://localhost:5000/api/Primeira/',
+            type: 'PUT',
+            Accept : "application/json",
+            contentType: "application/json", 
+            dataType: "json",
+            data: JSON.stringify(cidade),
+            success: function (data) {
+                $('#formulario').css('display','none');
+                $.alert({
+                            title: 'Sucesso',
+                            content: 'Dados atualizados',
+                        });
+                BuscarDados();
+            },
+            error: function (data) {
+                $.alert({
+                    title: 'Erro!',
+                    content: data.statusText,
+                });
+            }
+        });
+    }
+    function cadastrar(){
+        var cidade = {
+            nome: $('#nomeCidade').val(),
+            estado:$('#estadoCidade').val( ),
+            habitantes:parseInt($('#habitantesCidade').val())
+        }
+        
+        $.ajax({
+            url: 'http://localhost:5000/api/Primeira/',
+            type: 'POST',
+            Accept : "application/json",
+            contentType: "application/json", 
+            dataType: "json",
+            data: JSON.stringify(cidade),
+            success: function (data) {
+                $('#formulario').css('display','none');
+                $.alert({
+                            title: 'Sucesso',
+                            content: 'Cadastro efetuado',
+                        });
+                BuscarDados();
+            },
+            error: function (data) {
+                $.alert({
+                    title: 'Erro!',
+                    content: data.statusText,
+                });
+            }
+        });
+    }
+    function novaCidade(){
+        $('#form-idCidade').css('display','none');
+        $('.btn-cadastrar').css('display','');
+        $('.btn-atualizar').css('display','none');
+        $('#idCidade').val('');
+        $('#nomeCidade').val('');
+        $('#estadoCidade').val('');
+        $('#habitantesCidade').val('');
+        $('#formulario').css('display','');
+    }
+    function cancelar(){
+        $('#idCidade').val();
+        $('#nomeCidade').val();
+        $('#estadoCidade').val();
+        $('#habitantesCidade').val();
+        $('#formulario').css('display','none');
+    }
+    $('#tbCidades tbody').on('click', '.excluir', function(event){
+        var idCidade = $(this).data('id');
+        $.confirm({
+        title: 'Confirmação!',
+        content: 'Confirma a exclusão da cidade ' + $(this).data('nome'),
+        buttons: {
+            confirmar: function () {
+                $.ajax({
+                    url: 'http://localhost:5000/api/Primeira/' + idCidade,
+                    type: 'delete',
+                    dataType: 'json',
+                    success: function (data) {
+                        $.alert({
+                            title: 'Sucesso',
+                            content: 'Exclusão efetuada',
+                        });
+                        BuscarDados();
+                    },
+                    error: function (data) {
+                        $.alert({
+                            title: 'Erro!',
+                            content: data.statusText,
+                        });
+                    }
+                });
+            },
+            cancelar: function () {
+                
+            }
+        }
+        });
+    });
+    function BuscarDados(){
+        
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:5000/api/Primeira",
+                success: function (data) {
+                    var cols = "";
+                    for (var i = 0; i < data.length; i++) {
+                        cols += "<tr>";
+                        cols += "<td>" + data[i].id + "</td>";
+                        cols += "<td>" + data[i].nome + "</td>";
+                        cols += "<td>" + data[i].estado + "</td>";
+                        cols += "<td>" + data[i].habitantes + "</td>";
+                        cols += "<td><button class='btn btn-info atualizar' data-id='"+ data[i].id +"' data-nome='"+ data[i].nome +"' data-estado='"+ data[i].estado +"' data-habitantes='"+ data[i].habitantes +"' onclick='atualizar'()'>Atualizar</button>  |  ";
+                        cols += "<button  class='btn btn-danger excluir' data-id='"+ data[i].id +"'  data-nome='"+ data[i].nome +"'  onclick='excluir'()'>Excluir</button></td>";
+                        cols += "</tr>";
+                    }
+                    $("#tbCidades tbody").empty();
+                    $("#tbCidades tbody").append(cols);
+                    $("#qtdRegistros").html(data.length);
+                },
+                error: function (ex) {
+                    alert("Erro: " + ex.status);
+                }
+            })
+        
+    }
+   
+    </script>
+  </body>
+</html>
